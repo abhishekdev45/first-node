@@ -14,7 +14,7 @@ const server = http.createServer((req, res) => {
     res.end('Welcome to my Node.js project\n');
   } else {
     res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('Page not found\n');
+    res.end('Welcome to my Node Js project\n');
   }
 });
 
