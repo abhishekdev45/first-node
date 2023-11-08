@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+<form onsubmit="saveToLocal(event)" >
+  <label for="name">Name</label>
+  <input type="text" id="name" name="name">
+  <label for="email">Email</label>
+  <input type="text" id ="email"name="email">
+  <label for="phone">Phone NO</label>
+  <input type="text" id="phone" name="phone">
+  <button >submit </button>
+</form>
+
+<ul id="listItems"></ul>
+
+
+
+ 
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
+ <script >
+   function saveToLocal(event){
+    event.preventDefault();
+    const name = event.target.name.value;
+    const email = event.target.email.value;
+    const phone = event.target.phone.value;
+
+   const obj = {
+    name,
+    email,
+    phone
+   }
+
+    
+    axios.post("http://localhost:3000/user/add-data" ,obj)
+    .then(res =>{
+        console.log(res);
+        showItems(res.data.newUserData);
+        
+    })
+    .catch(e => {
+        console.log(e)
+        document.body.innerHTML=document.body.innerHTML + "<h3>error occured</h3>"
+    })
+    
+
+
+   }
+
+    
+
+
+   function showItems(user){
+
+    
+    
+    document.getElementById("name").value = "";
+    document.getElementById("email").value = "";
+    document.getElementById("phone").value = "";
+    const parentNode = document.getElementById("listItems");
+    
+    const childHTML = `<li id=${user.id}>${user.name}-${user.email}-${user.phone}<button onClick=deleteUser('${user.id}')>Delete</button></li>`
+    parentNode.innerHTML = parentNode.innerHTML+childHTML;
+    
+    
+
+   }
+   function deleteUser(userId){
+    axios.delete(`http://localhost:3000/user/delete-data/${userId}`).then(res=>{
+       
+       removeUser(userId);
+    }).catch(e=>console.log(e));
+   }
+
+   function removeUser(userId){
+    const parentNode = document.getElementById("listItems");
+    const nodeToDelete = document.getElementById(userId);
+    if(nodeToDelete){
+        parentNode.removeChild(nodeToDelete);
+    }
+
+   }
+   document.addEventListener("DOMContentLoaded",()=>{
+        axios.get("http://localhost:3000/user/get-data").then(res =>{
+           for(let i=0; i< res.data.allUser.length ;i++){
+            showItems(res.data.allUser[i]);
+           }
+           console.log(res.data)
+        })
+        .catch(e=>console.log(e))
+    })
+ </script> 
+</body>
+</html>
